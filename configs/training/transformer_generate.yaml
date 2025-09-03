@@ -1,0 +1,110 @@
+experiment:
+    project: "sweettok_generation"
+    name: "sweettok_b64_maskgit"
+    train_stage: 3
+    max_train_examples: 9537
+    save_every: 100_000
+    eval_every: 50_000
+    generate_every: 5_00000000000000
+    log_every: 50
+    log_grad_norm_every: 1_000
+    resume: True
+    init_weight: "path/to/tokenizer_weight"
+
+model:
+    vq_model:
+        vit_enc_model_size: "small"
+        vit_dec_model_size: "small"
+        vit_enc_patch_size: 16
+        vit_dec_patch_size: 8
+        # For SweetTok Base model
+        codebook_size: 8192
+        token_size: 8
+        use_l2_norm: True
+        commitment_cost: 0.25
+        # For SweetTok Compact model
+        num_spatial_latent_tokens: 256
+        num_intermediate_temporal_tokens : 2
+        num_temporal_latent_tokens: 1024
+        temporal_latent_depth: 4
+        enc_tube_size: 17
+        dec_tube_size: 5
+        dec_output_size: 8192
+        finetune_decoder: True
+        pretrained_tokenizer_weight: "./checkpoints/imagenet_ucf101.ckpt"
+        model_type: "transformer"
+
+    
+    generator:
+        hidden_size: 768
+        num_hidden_layers: 24
+        num_attention_heads: 16
+        intermediate_size: 3072
+        dropout: 0.1
+        attn_drop: 0.1
+        num_steps: 8
+        class_label_dropout: 0.1
+        image_seq_len: ${model.vq_model.num_latent_tokens}
+        condition_num_classes: 101
+        unconditional: False
+        first_stage_key: 'image'
+        vtokens: False
+        sample_every_n_latent_frames: 0
+        starts_with_sos: True
+        class_first: False
+        p_drop_cond: 0.1
+        vtokens_pos: False
+        transformer_dropout: 0.
+        sequence_length: 17
+        resolution: 256
+        # sampling hyper-params on the flight
+        randomize_temperature: 1.0
+        guidance_scale: 4.5
+        guidance_decay: "constant"
+
+
+losses:
+    label_smoothing: 0.1
+    loss_weight_unmasked_token: 0.1
+
+dataset:
+    params:
+        train_shards_path_or_url: ["./SweetTok", "./SweetTok/data_files/ucf_train.txt"] 
+        eval_shards_path_or_url: ["./SweetTok", "./SweetTok/data_files/ucf_val.txt"]
+        indice_path: "./indice.pkl"
+        num_workers_per_gpu: 12
+    preprocessing:
+        resize_shorter_edge: 256
+        crop_size: 256
+        random_crop: False
+        random_flip: True
+        normalize_mean: [0.5, 0.5, 0.5]
+        normalize_std: [1.0, 1.0, 1.0]
+
+optimizer:
+    name: adamw 
+    params:
+        learning_rate: 1e-4
+        beta1: 0.9
+        beta2: 0.96
+        weight_decay: 0.03
+
+
+lr_scheduler:
+    scheduler: "cosine"
+    params:
+        learning_rate: ${optimizer.params.learning_rate}
+        warmup_steps: 40000
+        end_lr: 1e-5
+
+
+training:
+    gradient_accumulation_steps: 1
+    per_gpu_batch_size: 4 # 32 GPU, total batch size 2048
+    mixed_precision: "fp16"
+    enable_tf32: True
+    enable_wandb: True
+    use_ema: True
+    seed: 42
+    max_train_steps: 4000_000
+    max_grad_norm: 1.0

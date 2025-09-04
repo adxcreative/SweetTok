@@ -241,8 +241,7 @@ class DecordVideoDataset(data.Dataset):
         video = self.norm(vid_frm_array).permute(1, 0, 2, 3)
         class_name = get_parent_dir(video_path)
         label = self.class_to_label[class_name]
-        # gt_video_path = '/data/jiajian/xuran/OmniTokenizer'+ video_path[16:]
-        # index = parse_codec(self.video_codec_txn_gt, gt_video_path)
+
         video_key = os.path.basename(video_path).split('.')[0]
 
         return {"image": video, "class_id": label, "__key__": video_key}
@@ -379,8 +378,7 @@ class DecordVideoDataset_indice(data.Dataset):
         video = self.norm(vid_frm_array).permute(1, 0, 2, 3)
         class_name = get_parent_dir(video_path)
         label = self.class_to_label[class_name]
-        # gt_video_path = '/data/jiajian/xuran/OmniTokenizer'+ video_path[16:]
-        # index = parse_codec(self.video_codec_txn_gt, gt_video_path)
+
         video_key = os.path.basename(video_path).split('.')[0]
         indices = torch.cat((self.indices_list[video_key]['spatial_indices'], self.indices_list[video_key]['temporal_indices']))
 
@@ -705,8 +703,8 @@ class VideoData(pl.LightningDataModule):
         parser = argparse.ArgumentParser(parents=[parent_parser], add_help=False)
         parser.add_argument('--loader_type', type=str, default='sep', choices=['sep', 'joint'])
         parser.add_argument('--data_path', type=str, nargs="+", default=['./UCF-101/videos_split/'])
-        parser.add_argument('--train_datalist', type=str, nargs="+", default=['/data/tanzhentao/OmniTokenizer/annotations/ucf_train.txt'])
-        parser.add_argument('--val_datalist', type=str, nargs="+", default=['/data/tanzhentao/OmniTokenizer/annotations/ucf_val.txt'])
+        parser.add_argument('--train_datalist', type=str, nargs="+", default=['/data_files/ucf_train.txt'])
+        parser.add_argument('--val_datalist', type=str, nargs="+", default=['/data_files/ucf_val.txt'])
         parser.add_argument('--sample_ratio', type=float, nargs="+", default=[1])
         parser.add_argument('--fps', type=int, default=16)
         parser.add_argument('--resizecrop', action="store_true")

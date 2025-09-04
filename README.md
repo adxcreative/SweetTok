@@ -33,9 +33,11 @@ SweetTok/
 ├── codebook_priors/
 │   └── mlc_codebook_noun_adj.pkl
 │   └── mlc_codebook_verb_adv.pkl
-└── OmniTokenizer/
-    └── fvd/
-        └──i3d_pretrained_400.pt
+└── evaluation/
+    └──common_metrics_on_video_quality/
+       └──OmniTokenizer/
+          └── fvd/
+              └──i3d_pretrained_400.pt
 ```
 
 ## Training

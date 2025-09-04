@@ -37,7 +37,7 @@ from evaluator import VQGANEvaluator
 from utils.viz_utils import make_viz_from_samples
 from torchinfo import summary
 import imageio
-from OmniTokenizer.fvd.fvd import get_fvd_logits, frechet_distance, load_fvd_model
+from evaluation.common_metrics_on_video_quality.OmniTokenizer.fvd.fvd import get_fvd_logits, frechet_distance, load_fvd_model
 
 from tqdm import tqdm
 
